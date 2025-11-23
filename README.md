@@ -1,69 +1,83 @@
-# Welcome to your Lovable project
+AdaptED AI is a smart digital tutor that personalizes learning with real-time help, adaptive feedback, and simplified lessons—making education accessible, engaging, and tailored to you
 
-## Project info
+## 🚀 Key Features
 
-**URL**: https://lovable.dev/projects/ef25d9f9-9ebf-4fc5-bce1-4c25b2c2fd18
+- **Adaptive Learning Paths**: Three learning modes to suit different needs:
+  - Quick Start: For rapid assignment assistance (Coming Soon!)
+  - Learn Fast: For efficient concept mastery (Coming Soon!)
+  - Master It: For comprehensive understanding and skill development
 
-## How can I edit this code?
+- **Interactive Learning Tools**:
+  - AI-powered assignment analysis
+  - Dynamic flashcard generation
+  - Progressive assessment questions
+  - Real-time feedback and progress tracking
 
-There are several ways of editing your application.
+- **Smart Content Processing**:
+  - Support for multiple file formats (.pdf, .doc, .docx, .txt, .rtf, .ppt, .pptx)
+  - Intelligent content parsing and structuring
+  - Automated learning material generation
 
-**Use Lovable**
+## 🛠️ Tech Stack
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/ef25d9f9-9ebf-4fc5-bce1-4c25b2c2fd18) and start prompting.
+### Frontend
+- **Framework**: React 18 with TypeScript
+- **Build Tool**: Vite
+- **Styling**: TailwindCSS
+- **UI Components**: Shadcn UI
+- **State Management**: React Context
+- **Routing**: React Router
 
-Changes made via Lovable will be committed automatically to this repo.
+### AI Integration
+- **AI Engine**: Google Generative AI (Gemini)
+- **File Processing**: Client-side PDF and document processing
+- **Data Management**: Local storage and state persistence
 
-**Use your preferred IDE**
+## 🏗️ Installation
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/yourusername/adaptedge-assignment-helper.git
+   cd adaptedge-assignment-helper
+   ```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-Follow these steps:
+3. Create a `.env` file in the project root:
+   ```env
+   VITE_GEMINI_API_KEY=your_api_key_here
+   VITE_USE_MOCK_DATA=false
+   VITE_MAX_UPLOAD_SIZE_MB=10
+   VITE_ALLOWED_FILE_TYPES=.pdf,.doc,.docx,.txt,.rtf,.ppt,.pptx
+   ```
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+4. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 🧠 AI-Powered Learning System
 
-# Step 3: Install the necessary dependencies.
-npm i
+The application uses a sophisticated 6-level learning system:
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+- **Level 0**: Assignment Overview - Initial analysis and breakdown
+- **Level 1**: Basic Understanding - Core concepts and fundamentals
+- **Level 2**: Advanced Understanding - Detailed concept exploration
+- **Level 3**: Practical Application - Real-world applications
+- **Level 4**: Expert Implementation - Advanced problem-solving
+- **Level 5**: Mastery - Comprehensive knowledge synthesis
 
-**Edit a file directly in GitHub**
+## 📝 License
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-**Use GitHub Codespaces**
+## 🌟 Developers
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with .
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/ef25d9f9-9ebf-4fc5-bce1-4c25b2c2fd18) and click on Share -> Publish.
-
-## I want to use a custom domain - is that possible?
-
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+Built by:
+- [Pranav](https://www.linkedin.com/in/pranavkutralingam)
+- [Naman](https://www.linkedin.com/in/namany)
+- [Swati](https://www.linkedin.com/in/swatikashyap8)
+- [Chandan](https://www.linkedin.com/in/chandannooli)
