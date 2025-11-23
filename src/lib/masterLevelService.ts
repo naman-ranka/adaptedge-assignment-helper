@@ -1,54 +1,29 @@
-// API interfaces for content structure
-export interface Flashcard {
-  heading: string;
-  flashcard_content: string;
-}
-
-export interface AssessmentQuestion {
-  id: string;
-  concept_focus: string;
-  type: 'MCQ' | 'MAQ';
-  question_text: string;
-  options: string[];
-  correct_answers: string[];
-}
-
-export interface LevelData {
-  status: string;
-  main_content_md?: string;
-  main_conent_md?: string; // Handle both spellings
-  assignment_summary_md?: string; // For level 0 assignment overview
-  feedback_md?: string;
-  flashcards: Flashcard[];
-  assessment_questions: AssessmentQuestion[];
-}
-
-export interface LLMContentRequest {
-  type: string;
-  level: number;
-  files: Record<string, any>; // Changed from array to object format
-  questionnaire?: {
-    questions: AssessmentQuestion[];
-    answers: Record<string, string[]>;
-  };
-}
-
-export interface LLMContentResponse {
-  response: LevelData;
-  level: number;
-  type: string;
-}
-
 // Import Gemini API service
 import { callGeminiAPI } from './geminiService';
 import { create } from 'zustand';
 
-// Create a store for the loading state to track API calls throughout the app
-interface LoadingState {
-  isLoading: boolean;
-  message: string;
-  setLoading: (isLoading: boolean, message?: string) => void;
-}
+// Re-export types from centralized types file for backward compatibility
+export type {
+  Flashcard,
+  AssessmentQuestion,
+  LevelData,
+  LLMContentRequest,
+  LLMContentResponse,
+  Questionnaire,
+  ProcessedFiles,
+  AnswersDocument,
+  LoadingState as LoadingStateType
+} from '@/types';
+
+import type {
+  Flashcard,
+  AssessmentQuestion,
+  LevelData,
+  ProcessedFiles,
+  Questionnaire,
+  AnswersDocument,
+  LoadingState
+} from '@/types';
 
 export const useLoadingState = create<LoadingState>((set) => ({
   isLoading: false,
@@ -68,11 +43,8 @@ export const useLoadingState = create<LoadingState>((set) => ({
  */
 export const fetchLevelContent = async (
   level: number,
-  files?: Record<string, any>,
-  questionnaire?: {
-    questions: AssessmentQuestion[];
-    answers: Record<string, string[]>;
-  }
+  files?: ProcessedFiles,
+  questionnaire?: Questionnaire
 ): Promise<LevelData> => {
   // Set loading state
   const setLoading = useLoadingState.getState().setLoading;
@@ -136,7 +108,7 @@ export const submitAnswersAndGetNextLevel = async (
   currentLevel: number,
   questions: AssessmentQuestion[],
   answers: Record<string, string[]>,
-  files: Record<string, any>
+  files: ProcessedFiles
 ): Promise<LevelData> => {
   // Package the questionnaire
   const questionnaire = {

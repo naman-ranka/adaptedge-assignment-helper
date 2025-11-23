@@ -1,7 +1,4 @@
-import { LevelData } from './masterLevelService';
-// Assuming fileToBase64 is correctly implemented elsewhere if needed,
-// but it's not directly used in this service based on the input structure.
-// import { fileToBase64 } from './fileUploadService';
+import type { LevelData, ProcessedFiles, FileInput, Questionnaire, AnswersDocument } from './masterLevelService';
 
 // --- Security Warning ---
 // API key is fetched from either GitHub environment variables or local .env file
@@ -12,7 +9,6 @@ const API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models/';
 const MODEL_NAME = 'gemini-1.5-flash-latest';
 const API_URL = `${API_BASE_URL}${MODEL_NAME}:generateContent`;
 
-
 // --- Gemini API Types ---
 interface GeminiRequestPart {
   text?: string;
@@ -20,47 +16,24 @@ interface GeminiRequestPart {
     mimeType: string;
     data: string; // base64 encoded data
   };
-  // Add fileData for v1beta file API if you use that approach
-  // fileData?: {
-  //   mimeType: string;
-  //   fileUri: string; // URI obtained from File API upload
-  // };
 }
 
 interface GeminiContent {
-  role: 'user' | 'model'; // Typically 'user' for requests, 'model' for responses/history
+  role: 'user' | 'model';
   parts: GeminiRequestPart[];
 }
 
 interface GeminiRequest {
   contents: GeminiContent[];
-  // Add generationConfig, safetySettings if needed
-  // generationConfig?: { temperature?: number; maxOutputTokens?: number; ... };
-  // safetySettings?: { category: string; threshold: string; }[];
 }
 
 interface GeminiResponseCandidate {
   content: GeminiContent;
   finishReason: string;
-  // Add safetyRatings, citationMetadata, etc. if needed
 }
 
 interface GeminiResponse {
   candidates: GeminiResponseCandidate[];
-  // Add promptFeedback if needed
-}
-
-// --- Input File Types ---
-interface FileInput {
-  name: string;
-  content: string; // Can be text or base64 data
-  encoding: 'text' | 'base64'; // Explicitly define encoding
-  // mimeType could be pre-calculated and added here if known reliably
-}
-
-interface FilesInput {
-  assignment?: FileInput;
-  resources?: FileInput[];
 }
 
 /**
@@ -132,11 +105,11 @@ function getMimeType(filename: string): string {
 
 /**
  * Process files into Gemini-compatible format (GeminiRequestPart[]).
- * @param files Files to process, adhering to the FilesInput structure.
+ * @param files Files to process, adhering to the ProcessedFiles structure.
  * @returns Array of GeminiRequestPart objects.
  */
 export async function processFilesForGemini(
-  files: FilesInput
+  files: ProcessedFiles
 ): Promise<GeminiRequestPart[]> {
   const parts: GeminiRequestPart[] = [];
 
@@ -187,7 +160,7 @@ export async function processFilesForGemini(
  * @param text The raw text potentially containing JSON.
  * @returns The parsed JSON object or null if parsing fails.
  */
-function extractAndParseJson(text: string): any | null {
+function extractAndParseJson(text: string): unknown | null {
     try {
         // Attempt 1: Direct parsing
         return JSON.parse(text);
@@ -413,23 +386,16 @@ export function parseGeminiResponse(responseText: string, level: number): LevelD
 /**
  * Call the Gemini API with prompt, files, and optional questionnaire data.
  * @param level The level to get content for.
- * @param files Object containing files data according to FilesInput interface.
+ * @param files Object containing files data according to ProcessedFiles interface.
  * @param questionnaireData Optional previous level questions and answers.
  * @param answersDocument Optional answers document for level 6 final review.
  * @returns Promise resolving to LevelData.
  */
 export async function callGeminiAPI(
   level: number,
-  files: FilesInput,
-  questionnaireData?: {
-    questions: any[]; // Keep any for now, refine if Question structure is known
-    answers: Record<string, string[]>; // Map of question ID to selected answer(s)
-  },
-  answersDocument?: {
-    name: string;
-    content: string;
-    type: string;
-  }
+  files: ProcessedFiles,
+  questionnaireData?: Questionnaire,
+  answersDocument?: AnswersDocument
 ): Promise<LevelData> {
   if (!API_KEY) {
     console.error('Gemini API key is missing. Please configure VITE_GEMINI_API_KEY.');

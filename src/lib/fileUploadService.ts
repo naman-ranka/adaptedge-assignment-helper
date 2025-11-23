@@ -2,6 +2,8 @@
  * Service for handling file uploads and converting them to formats needed for API requests
  */
 
+import type { ProcessedFiles, FileInput } from '@/types';
+
 /**
  * Converts a File object to base64 encoding
  * @param file The file to convert
@@ -51,9 +53,9 @@ export const fileToText = (file: File): Promise<string> => {
  */
 export const processFilesForUpload = async (
   files: File[]
-): Promise<Record<string, any>> => {
+): Promise<ProcessedFiles> => {
   try {
-    const result: Record<string, any> = {};
+    const result: ProcessedFiles = {};
 
     // First file is considered the assignment
     if (files.length > 0) {
