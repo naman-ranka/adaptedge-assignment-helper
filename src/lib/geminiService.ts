@@ -221,32 +221,27 @@ export function parseGeminiResponse(responseText: string, level: number): LevelD
         const parsedJson = extractAndParseJson(responseText);
 
         if (parsedJson && typeof parsedJson === 'object') {
-            console.log(`Parsed JSON response for level ${level}:`, parsedJson);
-            
             // Basic validation: check for expected top-level keys
-            if ('main_content_md' in parsedJson || 'flashcards' in parsedJson || 'assessment_questions' in parsedJson || 
+            if ('main_content_md' in parsedJson || 'flashcards' in parsedJson || 'assessment_questions' in parsedJson ||
                 (level === 5 && ('feedback_md' in parsedJson || 'practice_assignment_md' in parsedJson || 'solution_md' in parsedJson))) {
-                console.log("Successfully parsed JSON response from Gemini.");
-                 
+
                 // Special handling for Level 5 structure
                 if (level === 5) {
                     // Create or enhance main_content_md by combining practice assignment and solution
                     let mainContent = parsedJson.main_content_md || '';
-                    
+
                     if (parsedJson.practice_assignment_md) {
                         mainContent += (mainContent ? '\n\n' : '') + parsedJson.practice_assignment_md;
                     }
-                    
+
                     if (parsedJson.solution_md) {
                         mainContent += (mainContent ? '\n\n' : '') + parsedJson.solution_md;
                     }
-                    
+
                     // Update the main_content_md with our combined content
                     if (mainContent) {
                         parsedJson.main_content_md = mainContent;
                     }
-                    
-                    console.log("Processed level 5 content with specialized handling");
                 }
                  
                 // Build the final response object
@@ -262,14 +257,9 @@ export function parseGeminiResponse(responseText: string, level: number): LevelD
             } else {
                 console.warn("Parsed JSON, but it doesn't contain expected keys. Proceeding with text parsing attempt.");
             }
-        } else {
-            console.log("Response was not valid JSON or couldn't be extracted. Attempting structured text parsing.");
         }
 
         // --- Fallback Method: Structured Text Parsing (Less Reliable) ---
-        // If you *must* use text parsing, make it as robust as possible,
-        // but strongly advise switching prompts to output JSON.
-        console.warn("Parsing Gemini response as structured text. This is less reliable than JSON output.");
         const result: LevelData = {
             status: "success", // Assume success unless parsing completely fails
             main_content_md: "",
@@ -465,7 +455,6 @@ export async function callGeminiAPI(
     // For level 6, inject the answers document content into the prompt
     if (level === 6 && answersDocument) {
       userPromptText = userPromptText.replace('{{ANSWERS_DOCUMENT}}', answersDocument.content);
-      console.log(`Inserted answers document content (${answersDocument.content.length} characters) into prompt for level 6.`);
     }
 
     if (level > 0 && questionnaireData && questionnaireData.questions?.length > 0) {
@@ -504,9 +493,6 @@ export async function callGeminiAPI(
     };
 
     // 5. Make the API request
-    console.log(`%c🚀 Calling Gemini API (Level ${level}) Model: ${MODEL_NAME}`, 'background:#f0f0f0; color:#333; padding:4px; border-radius:3px;');
-    // console.log("Request Body:", JSON.stringify(requestBody, null, 2)); // Optional: Log request body for debugging
-
     const url = `${API_URL}?key=${API_KEY}`;
     const response = await fetch(url, {
       method: 'POST',
@@ -550,7 +536,6 @@ export async function callGeminiAPI(
 
     if (!responseText) {
         console.warn("Gemini API returned a candidate but with no text content.", candidate);
-        // Decide how to handle: error or empty success? Returning error for now.
          return {
             status: "error",
             main_content_md: "Gemini returned an empty response.",
@@ -558,9 +543,6 @@ export async function callGeminiAPI(
             assessment_questions: []
          };
     }
-
-    console.log(`%c📝 GEMINI RAW RESPONSE (Level ${level}):`, 'background:#4285F4; color:white; padding:4px; border-radius:3px; font-weight:bold;');
-    console.log(responseText); // Log raw text before parsing
 
     // 8. Parse the response text into LevelData
     return parseGeminiResponse(responseText, level);

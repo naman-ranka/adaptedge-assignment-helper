@@ -25,14 +25,6 @@ const Upload = () => {
   
   const ALLOWED_FILE_TYPES = import.meta.env.VITE_ALLOWED_FILE_TYPES || ".pdf,.doc,.docx,.txt";
 
-  // DEBUG: Log environment variables to make sure they're loaded
-  console.log("Environment variables:", {
-    API_BASE_URL: import.meta.env.VITE_API_BASE_URL,
-    USE_MOCK_DATA: import.meta.env.VITE_USE_MOCK_DATA,
-    MAX_UPLOAD_SIZE_MB: import.meta.env.VITE_MAX_UPLOAD_SIZE_MB,
-    ALLOWED_FILE_TYPES: import.meta.env.VITE_ALLOWED_FILE_TYPES
-  });
-
   const handleAssignmentUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files || e.target.files.length === 0) return;
     
@@ -90,60 +82,44 @@ const Upload = () => {
     }
 
     setIsUploading(true);
-    
+
     try {
-      console.log("🧹 CLEARING ALL PREVIOUS DATA FOR NEW ASSIGNMENT");
-      
       // Clear all previous chat memory and level data from session storage
-      console.log("Clearing previous chat memory and level data...");
-      
-      // Clear previous level data and responses
       sessionStorage.removeItem('previousLevelResponses');
       sessionStorage.removeItem('currentLevelData');
       sessionStorage.removeItem('previousQuestions');
       sessionStorage.removeItem('answeredQuestions');
-      
+
       // Also clear any conversation history
       sessionStorage.removeItem('chatHistory');
       sessionStorage.removeItem('conversationContext');
-      
+
       // Clear specifically flashcard related data
       sessionStorage.removeItem('flashcards');
       sessionStorage.removeItem('flashcardProgress');
       sessionStorage.removeItem('completedFlashcards');
       localStorage.removeItem('savedFlashcards');
-      
+
       // Clear level-specific data for all levels (0-5)
       for (let level = 0; level <= 5; level++) {
         sessionStorage.removeItem(`level${level}_data`);
         sessionStorage.removeItem(`level${level}_progress`);
         sessionStorage.removeItem(`level${level}_questions`);
         sessionStorage.removeItem(`level${level}_answers`);
-        console.log(`Cleared data for level ${level}`);
       }
-      
+
       // Clear any other potential stored data
       sessionStorage.removeItem('currentAssignment');
       sessionStorage.removeItem('lastAccessedLevel');
       localStorage.removeItem('userProgress');
       localStorage.removeItem('completedLevels');
-      
-      console.log("✅ ALL PREVIOUS DATA CLEARED FOR NEW ASSIGNMENT");
-      
+
       // Process files for API
       const allFiles = [assignmentFile, ...studyMaterials];
-      console.log("Files to process:", allFiles.map(f => ({ name: f.name, size: f.size, type: f.type })));
-      
       const processedFiles = await processFilesForUpload(allFiles);
-      console.log("Processed files:", processedFiles);
-      
+
       // Store processed files in session storage for later use
       sessionStorage.setItem('uploadedFiles', JSON.stringify(processedFiles));
-      
-      // Verify the data was saved to session storage
-      const savedFiles = sessionStorage.getItem('uploadedFiles');
-      console.log("Saved to session storage:", savedFiles ? "yes" : "no", 
-                  savedFiles ? JSON.parse(savedFiles).length : 0, "files");
       
       toast({
         title: "Upload successful!",
