@@ -137,20 +137,8 @@ const MasterIt = () => {
 
         // For level 0, we don't need questionnaire
         if (levelIdNumber === 0) {
-          // For demo purposes, you might need to populate uploadedFiles from localStorage
-          // In a real app, these would come from the file upload component
           const levelData = await fetchLevelContent(levelIdNumber, uploadedFiles);
-          
-          // Log the complete Level 0 data for debugging
-          console.log("======= LEVEL ZERO DATA =======");
-          console.log("Status:", levelData.status);
-          console.log("Assignment Summary MD present:", !!levelData.assignment_summary_md);
-          console.log("Main Content MD present:", !!levelData.main_content_md || !!levelData.main_conent_md);
-          console.log("Flashcards:", levelData.flashcards.length);
-          console.log("Questions:", levelData.assessment_questions.length);
-          console.log("Complete Level 0 data:", JSON.stringify(levelData, null, 2));
-          console.log("==============================");
-          
+
           setCurrentLevel(levelData);
           // Store current level's questions for later use
           setPreviousQuestions(levelData.assessment_questions);
@@ -178,8 +166,7 @@ const MasterIt = () => {
           
           // Parse the answers document
           const answersDocument = JSON.parse(storedAnswersDoc);
-          console.log("Found answers document for evaluation:", answersDocument.name);
-          
+
           // Fetch level 6 content with the answers document
           // We won't pass questionnaire data for level 6 as we want the evaluation to focus on the submitted assignment
           const levelData = await fetchLevelContent(levelIdNumber, uploadedFiles);
@@ -199,16 +186,7 @@ const MasterIt = () => {
               answers: answeredQuestions
             }
           );
-          
-          // Debug logging to check if feedback_md is present
-          console.log(`Level ${levelIdNumber} feedback_md present: ${!!levelData.feedback_md}`);
-          if (!levelData.feedback_md && levelIdNumber > 0) {
-            console.warn(`Level ${levelIdNumber} missing feedback_md`);
-          }
-          
-          // Log the complete LevelData object for debugging
-          console.log(`Complete Level ${levelIdNumber} data:`, JSON.stringify(levelData, null, 2));
-          
+
           setCurrentLevel(levelData);
           // Store current level's questions for next level
           setPreviousQuestions(levelData.assessment_questions);
@@ -247,23 +225,19 @@ const MasterIt = () => {
   // Store uploaded files from session storage when component mounts
   useEffect(() => {
     const storedFiles = sessionStorage.getItem('uploadedFiles');
-    console.log("MasterIt: Checking for stored files in sessionStorage:", storedFiles ? "Found" : "Not found");
-    
+
     if (storedFiles) {
       try {
         const parsedFiles = JSON.parse(storedFiles);
-        console.log("MasterIt: Parsed files from storage:", parsedFiles.length, "files");
         setUploadedFiles(parsedFiles);
       } catch (error) {
-        console.error("MasterIt: Error parsing stored files:", error);
+        console.error("Error parsing stored files:", error);
         toast({
           title: "Error loading files",
           description: "There was a problem loading your uploaded files. You may need to upload them again.",
           variant: "destructive"
         });
       }
-    } else {
-      console.warn("MasterIt: No files found in session storage");
     }
   }, [toast]);
 
@@ -401,15 +375,11 @@ const MasterIt = () => {
         if (storedFiles) {
           try {
             filesForSubmission = JSON.parse(storedFiles);
-            console.log("Retrieved files from session storage for submission:", filesForSubmission.length);
           } catch (error) {
             console.error("Error parsing stored files during submission:", error);
           }
         }
       }
-      
-      // Log what we're submitting
-      console.log(`Submitting answers for level ${levelId} with ${filesForSubmission.length} files included`);
       
       // Submit answers and get next level - making sure to include the files
       await submitAnswersAndGetNextLevel(

@@ -67,75 +67,49 @@ export const useLoadingState = create<LoadingState>((set) => ({
  * @returns LevelData for the requested level
  */
 export const fetchLevelContent = async (
-  level: number, 
+  level: number,
   files?: Record<string, any>,
   questionnaire?: {
     questions: AssessmentQuestion[];
     answers: Record<string, string[]>;
   }
 ): Promise<LevelData> => {
-  console.log('=== fetchLevelContent ===');
-  console.log('Level:', level);
-  console.log('Files provided:', files ? 'Yes' : 'No');
-  console.log('Questionnaire provided:', questionnaire ? 'Yes' : 'No');
-  console.log('API Key:', import.meta.env.VITE_GEMINI_API_KEY ? 'Present' : 'Missing');
-  
   // Set loading state
   const setLoading = useLoadingState.getState().setLoading;
   setLoading(true, getLevelLoadingMessage(level));
-  
+
   try {
     // Ensure we have files for the API request
     let filesForRequest = files;
-    
+
     // If no files were provided, try to get them from session storage
     if (!filesForRequest || Object.keys(filesForRequest).length === 0) {
-      console.log('No files provided directly, attempting to retrieve from session storage');
       const storedFiles = sessionStorage.getItem('uploadedFiles');
       if (storedFiles) {
         try {
           filesForRequest = JSON.parse(storedFiles);
-          console.log(`Retrieved files from session storage for API request: ${
-            typeof filesForRequest === 'object' ? JSON.stringify(Object.keys(filesForRequest)) : 'none'
-          }`);
         } catch (error) {
           console.error('Error parsing stored files for API request:', error);
         }
-      } else {
-        console.warn('No files found in session storage');
       }
     }
-    
+
     // For level 6, check for answers document in session storage
     let answersDocument = null;
     if (level === 6) {
-      console.log('Level 6 detected, looking for answers document in session storage');
       const storedAnswersDoc = sessionStorage.getItem('answersDocument');
       if (storedAnswersDoc) {
         try {
           answersDocument = JSON.parse(storedAnswersDoc);
-          console.log('Retrieved answers document from session storage:', answersDocument.name);
         } catch (error) {
           console.error('Error parsing answers document:', error);
         }
-      } else {
-        console.warn('No answers document found in session storage for level 6');
       }
     }
-    
-    console.log('Calling Gemini API with:');
-    console.log(`- Level: ${level}`);
-    console.log(`- Files: ${filesForRequest ? Object.keys(filesForRequest).length : 0} items`);
-    console.log(`- Questionnaire: ${questionnaire ? 'Yes' : 'No'}`);
-    console.log(`- Answers document: ${answersDocument ? 'Yes' : 'No'}`);
-    
+
     // Use our Gemini API service to get content
     try {
       const result = await callGeminiAPI(level, filesForRequest || {}, questionnaire, answersDocument);
-      console.log('Successfully received Gemini API response');
-      console.log(`- Flashcards: ${result.flashcards.length}`);
-      console.log(`- Questions: ${result.assessment_questions.length}`);
-      console.log(`- Main content length: ${result.main_content_md?.length || 0} chars`);
       return result;
     } catch (error: any) {
       console.error('Error from Gemini API:', error.message);
